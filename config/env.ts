@@ -14,4 +14,7 @@ export const env = {
 
   // Database
   DATABASE_URL: required("DATABASE_URL"),
+
+  // OpenAI
+  OPENAI_API_KEY: required("OPENAI_API_KEY"),
 };
