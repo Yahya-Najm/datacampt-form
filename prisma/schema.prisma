@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Application {
+  id String @id @default(cuid())
+
+  // Personal
+  name        String
+  email       String   @unique
+  dateOfBirth DateTime
+  country     String
+  city        String
+  gender      String
+
+  // Current situation
+  currentSituation  String[]
+  situationOther    String?
+  situationFileUrls String[]
+
+  // Internet & devices
+  internetType  String
+  internetOther String?
+  devices       String[]
+  deviceOther   String?
+
+  // Employment & academic
+  jobTitle                String?
+  employer                String?
+  currentSchool           String
+  academicStage           String
+  financialAssistance     String[]
+  financialAssistanceNote String?
+  parentsEducation        String?
+
+  // DataCamp background
+  previousDatacamp      Boolean @default(false)
+  accomplishmentFileUrl String?
+  knowledgeScale        Int?
+  topicsToLearn         String?
+  timeCommitment        String
+  timeCommitmentOther   String?
+
+  // Essays
+  goals                 String
+  whyDeserveScholarship String
+  challenge             String
+  anythingElse          String?
+
+  // Commitment
+  willingToSurvey String
+
+  // Meta
+  ipAddress   String?
+  submittedAt DateTime @default(now())
+  status      String   @default("pending")
+
+  @@index([email])
+  @@index([submittedAt])
+}
