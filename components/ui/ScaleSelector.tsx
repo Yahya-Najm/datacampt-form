@@ -23,7 +23,7 @@ export function ScaleSelector({
     <div className="flex flex-col gap-3">
       {label && <p className="text-sm font-medium text-gray-700">{label}</p>}
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between">
           {Array.from({ length: steps }, (_, i) => {
             const n = String(i + 1);
             const active = value === n;
@@ -45,7 +45,7 @@ export function ScaleSelector({
             );
           })}
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between mt-1.5">
           <span className="text-xs text-gray-500">{minLabel}</span>
           <span className="text-xs text-gray-500">{maxLabel}</span>
         </div>

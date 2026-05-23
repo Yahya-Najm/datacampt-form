@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ProgressBar } from "./ProgressBar";
+import { Step0Social } from "./steps/Step0Social";
 import { Step1Personal } from "./steps/Step1Personal";
 import { Step2Situation } from "./steps/Step2Situation";
 import { Step3Academic } from "./steps/Step3Academic";
@@ -14,12 +15,14 @@ import { submitApplication } from "@/actions/application";
 import { uploadToR2 } from "@/lib/upload-client";
 import { INITIAL_FORM_DATA, ApplicationFormData, FormErrors } from "@/types/application";
 
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 7;
 
 function validateStep(step: number, data: ApplicationFormData): FormErrors {
   const errs: FormErrors = {};
 
-  if (step === 1) {
+  // step 1 = Social Links — no validation required
+
+  if (step === 2) {
     if (!data.name.trim()) errs.name = "Full name is required.";
     if (!data.email.trim()) {
       errs.email = "Email is required.";
@@ -34,7 +37,7 @@ function validateStep(step: number, data: ApplicationFormData): FormErrors {
       errs.gender = "Please specify your gender.";
   }
 
-  if (step === 2) {
+  if (step === 3) {
     if (data.currentSituation.length === 0)
       errs.currentSituation = "Please select at least one option.";
     if (!data.internetType) errs.internetType = "Please select your internet type.";
@@ -44,25 +47,29 @@ function validateStep(step: number, data: ApplicationFormData): FormErrors {
       errs.devices = "Please select at least one device.";
   }
 
-  if (step === 3) {
+  if (step === 4) {
     if (!data.currentSchool.trim()) errs.currentSchool = "School name is required.";
     if (!data.academicStage) errs.academicStage = "Please select your academic stage.";
   }
 
-  if (step === 4) {
+  if (step === 5) {
     if (!data.timeCommitment) errs.timeCommitment = "Please select your time commitment.";
     if (data.timeCommitment === "Other" && !data.timeCommitmentOther.trim())
       errs.timeCommitment = "Please specify your time commitment.";
   }
 
-  if (step === 5) {
+  if (step === 6) {
+    const wc = (s: string) => (s.trim() === "" ? 0 : s.trim().split(/\s+/).length);
     if (!data.goals.trim()) errs.goals = "Please share your goals.";
-    if (!data.whyDeserveScholarship.trim())
-      errs.whyDeserveScholarship = "This field is required.";
+    else if (wc(data.goals) > 250) errs.goals = "Please keep your answer to 250 words or fewer.";
+    if (!data.whyDeserveScholarship.trim()) errs.whyDeserveScholarship = "This field is required.";
+    else if (wc(data.whyDeserveScholarship) > 250) errs.whyDeserveScholarship = "Please keep your answer to 250 words or fewer.";
     if (!data.challenge.trim()) errs.challenge = "Please describe a challenge you faced.";
+    else if (wc(data.challenge) > 250) errs.challenge = "Please keep your answer to 250 words or fewer.";
+    if (data.anythingElse && wc(data.anythingElse) > 250) errs.anythingElse = "Please keep your answer to 250 words or fewer.";
   }
 
-  if (step === 6) {
+  if (step === 7) {
     if (!data.willingToSurvey)
       errs.willingToSurvey = "Please answer this question.";
   }
@@ -70,7 +77,14 @@ function validateStep(step: number, data: ApplicationFormData): FormErrors {
   return errs;
 }
 
-export function FormContainer() {
+interface SocialLink {
+  id: string;
+  platform: string;
+  label: string;
+  url: string;
+}
+
+export function FormContainer({ socialLinks = [] }: { socialLinks?: SocialLink[] }) {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
@@ -259,24 +273,25 @@ export function FormContainer() {
       <div className="max-w-2xl mx-auto px-3 sm:px-4 py-6 md:py-10">
         <div ref={formCardRef} className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 md:p-10" style={{ boxShadow: "0 4px 32px 0 rgba(3, 239, 98, 0.07), 0 1px 4px 0 rgba(0,0,0,0.06)" }}>
 
-          {currentStep === 1 && <Step1Personal {...stepProps} />}
-          {currentStep === 2 && (
+          {currentStep === 1 && <Step0Social socialLinks={socialLinks} />}
+          {currentStep === 2 && <Step1Personal {...stepProps} />}
+          {currentStep === 3 && (
             <Step2Situation
               {...stepProps}
               situationFiles={situationFiles}
               onSituationFilesChange={setSituationFiles}
             />
           )}
-          {currentStep === 3 && <Step3Academic {...stepProps} />}
-          {currentStep === 4 && (
+          {currentStep === 4 && <Step3Academic {...stepProps} />}
+          {currentStep === 5 && (
             <Step4DataCamp
               {...stepProps}
               accomplishmentFiles={accomplishmentFiles}
               onAccomplishmentFilesChange={setAccomplishmentFiles}
             />
           )}
-          {currentStep === 5 && <Step5Essays {...stepProps} />}
-          {currentStep === 6 && <Step6Commitment {...stepProps} />}
+          {currentStep === 6 && <Step5Essays {...stepProps} />}
+          {currentStep === 7 && <Step6Commitment {...stepProps} />}
 
           {submitError && (
             <div className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">

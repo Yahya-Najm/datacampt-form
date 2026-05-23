@@ -22,6 +22,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
           <div className="flex items-center gap-4">
             <span className="hidden sm:block text-xs text-gray-400">{session.adminEmail}</span>
+            <Link
+              href="/dashboard/social-links"
+              className="text-xs text-gray-500 hover:text-teal-600 transition-colors"
+            >
+              Social Links
+            </Link>
             {session.isSuperAdmin && (
               <Link
                 href="/dashboard/admins"

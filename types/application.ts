@@ -82,6 +82,7 @@ export const INITIAL_FORM_DATA: ApplicationFormData = {
 };
 
 export const STEP_TITLES = [
+  "Social Links",
   "Personal Info",
   "Your Situation",
   "Academic & Work",

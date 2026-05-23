@@ -23,7 +23,7 @@ export default function SuccessPage() {
         <div className="flex items-center justify-center gap-2 mb-4">
           <img src="/foroz-logo.svg" alt="FOROZ" className="h-6 w-auto" />
           <span className="text-gray-300">×</span>
-          <img src="/datacampt.png" alt="DataCamp" className="h-28 w-auto" />
+          <img src="/datacampt.png" alt="DataCamp" className="h-6 w-auto" />
         </div>
         <h1 className="text-2xl font-black text-gray-900 mb-2">Application Submitted!</h1>
         <p className="text-gray-600 mb-1">

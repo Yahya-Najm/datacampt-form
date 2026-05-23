@@ -23,6 +23,7 @@ export function Step5Essays({ data, errors, onChange }: Props) {
         label="The free DataCamp Donates scholarship lasts 6–12 months. What personal and professional goals do you hope to achieve by the end of this year? How will free access to DataCamp help you accomplish them?"
         required
         rows={6}
+        maxWords={250}
         placeholder="Share your goals and how DataCamp will help you achieve them…"
         value={data.goals}
         onChange={(e) => onChange("goals", e.target.value)}
@@ -33,6 +34,7 @@ export function Step5Essays({ data, errors, onChange }: Props) {
         label="Why are you the right person to receive this scholarship?"
         required
         rows={6}
+        maxWords={250}
         placeholder="Explain why you deserve this scholarship…"
         value={data.whyDeserveScholarship}
         onChange={(e) => onChange("whyDeserveScholarship", e.target.value)}
@@ -43,6 +45,7 @@ export function Step5Essays({ data, errors, onChange }: Props) {
         label="Please describe a personal or professional challenge you have faced and how you overcame it."
         required
         rows={6}
+        maxWords={250}
         placeholder="Describe a challenge and how you overcame it…"
         value={data.challenge}
         onChange={(e) => onChange("challenge", e.target.value)}
@@ -52,6 +55,7 @@ export function Step5Essays({ data, errors, onChange }: Props) {
       <Textarea
         label="Is there anything else we should know about you?"
         rows={4}
+        maxWords={250}
         placeholder="Optional — anything else you'd like to share…"
         value={data.anythingElse}
         onChange={(e) => onChange("anythingElse", e.target.value)}
