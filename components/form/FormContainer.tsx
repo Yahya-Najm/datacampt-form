@@ -10,12 +10,13 @@ import { Step3Academic } from "./steps/Step3Academic";
 import { Step4DataCamp } from "./steps/Step4DataCamp";
 import { Step5Essays } from "./steps/Step5Essays";
 import { Step6Commitment } from "./steps/Step6Commitment";
+import { Step7CodeOfConduct } from "./steps/Step7CodeOfConduct";
 import { Button } from "@/components/ui/Button";
 import { submitApplication } from "@/actions/application";
 import { uploadToR2 } from "@/lib/upload-client";
 import { INITIAL_FORM_DATA, ApplicationFormData, FormErrors } from "@/types/application";
 
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 8;
 
 function validateStep(step: number, data: ApplicationFormData): FormErrors {
   const errs: FormErrors = {};
@@ -29,12 +30,19 @@ function validateStep(step: number, data: ApplicationFormData): FormErrors {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
       errs.email = "Please enter a valid email address.";
     }
+    if (!data.phone.trim()) {
+      errs.phone = "Phone number is required.";
+    } else if (!/^\+?[\d\s\-().]{7,20}$/.test(data.phone.trim())) {
+      errs.phone = "Please enter a valid phone number.";
+    }
     if (!data.dateOfBirth) errs.dateOfBirth = "Date of birth is required.";
     if (!data.country) errs.country = "Country is required.";
     if (!data.city.trim()) errs.city = "City is required.";
     if (!data.gender) errs.gender = "Please select your gender.";
     if (data.gender === "Other" && !data.genderOther.trim())
       errs.gender = "Please specify your gender.";
+    if (!data.photoUrl) errs.photoUrl = "Please upload your photo.";
+    if (!data.idDocumentUrl) errs.idDocumentUrl = "Please upload your ID card or passport.";
   }
 
   if (step === 3) {
@@ -70,6 +78,11 @@ function validateStep(step: number, data: ApplicationFormData): FormErrors {
   }
 
   if (step === 7) {
+    if (!data.codeOfConduct)
+      errs.codeOfConduct = "You must acknowledge the Code of Conduct to continue.";
+  }
+
+  if (step === 8) {
     if (!data.willingToSurvey)
       errs.willingToSurvey = "Please answer this question.";
   }
@@ -97,6 +110,8 @@ export function FormContainer({ socialLinks = [] }: { socialLinks?: SocialLink[]
   // Files held locally until submit — never uploaded until the user submits
   const [situationFiles, setSituationFiles] = useState<File[]>([]);
   const [accomplishmentFiles, setAccomplishmentFiles] = useState<File[]>([]);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [idDocumentFiles, setIdDocumentFiles] = useState<File[]>([]);
 
   const formCardRef = useRef<HTMLDivElement>(null);
 
@@ -111,6 +126,15 @@ export function FormContainer({ socialLinks = [] }: { socialLinks?: SocialLink[]
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  // Mirror file selections into formData so validateStep can check them
+  useEffect(() => {
+    setFormData((prev) => ({ ...prev, photoUrl: photoFiles.length > 0 ? "pending" : "" }));
+  }, [photoFiles]);
+
+  useEffect(() => {
+    setFormData((prev) => ({ ...prev, idDocumentUrl: idDocumentFiles.length > 0 ? "pending" : "" }));
+  }, [idDocumentFiles]);
 
   const scrollToForm = useCallback(() => {
     setHasStarted(true);
@@ -157,15 +181,19 @@ export function FormContainer({ socialLinks = [] }: { socialLinks?: SocialLink[]
 
     try {
       // Upload files to R2 only at submission time
-      const [situationUrls, accomplishmentUrl] = await Promise.all([
+      const [situationUrls, accomplishmentUrl, photoUrl, idDocumentUrl] = await Promise.all([
         Promise.all(situationFiles.map((f) => uploadToR2(f, "documents"))),
         accomplishmentFiles[0] ? uploadToR2(accomplishmentFiles[0], "pdfs") : Promise.resolve(""),
+        photoFiles[0] ? uploadToR2(photoFiles[0], "photos") : Promise.resolve(""),
+        idDocumentFiles[0] ? uploadToR2(idDocumentFiles[0], "documents") : Promise.resolve(""),
       ]);
 
       const result = await submitApplication({
         ...formData,
         situationFileUrls: situationUrls,
         accomplishmentFileUrl: accomplishmentUrl,
+        photoUrl,
+        idDocumentUrl,
       });
 
       if (result.success) {
@@ -198,6 +226,20 @@ export function FormContainer({ socialLinks = [] }: { socialLinks?: SocialLink[]
           <p className="hidden sm:block mt-1.5 text-sm text-gray-500 max-w-lg mx-auto">
             Apply for free access to 440+ DataCamp courses — a $399+ USD value.
           </p>
+          <a
+            href="https://support.datacamp.com/hc/en-us"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-700 hover:bg-blue-100 hover:border-blue-300 transition-colors"
+          >
+            <svg className="h-3.5 w-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Having trouble? Contact DataCamp Technical Support
+            <svg className="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
         </div>
       </div>
 
@@ -237,6 +279,19 @@ export function FormContainer({ socialLinks = [] }: { socialLinks?: SocialLink[]
               Data Science, AI, Python, SQL, and more. Takes about 10–15 minutes.
             </p>
 
+            {/* AI Warning */}
+            <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5 text-left mb-6">
+              <svg className="h-5 w-5 flex-shrink-0 text-amber-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+              <div>
+                <p className="text-sm font-semibold text-amber-800">Do not use AI to fill out this form</p>
+                <p className="text-xs text-amber-700 mt-0.5 leading-relaxed">
+                  All answers, especially essays, must be written entirely in your own words. Applications detected as AI-generated (ChatGPT, Copilot, etc.) will be automatically disqualified.
+                </p>
+              </div>
+            </div>
+
             {/* What you get */}
             <div className="grid grid-cols-3 gap-3 mb-8 text-center">
               {[
@@ -273,8 +328,26 @@ export function FormContainer({ socialLinks = [] }: { socialLinks?: SocialLink[]
       <div className="max-w-2xl mx-auto px-3 sm:px-4 py-6 md:py-10">
         <div ref={formCardRef} className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 md:p-10" style={{ boxShadow: "0 4px 32px 0 rgba(3, 239, 98, 0.07), 0 1px 4px 0 rgba(0,0,0,0.06)" }}>
 
+          {/* Persistent AI warning — shown on all steps */}
+          <div className="flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-3 mb-6">
+            <svg className="h-4 w-4 flex-shrink-0 text-amber-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            </svg>
+            <p className="text-xs text-amber-800 leading-relaxed">
+              <span className="font-semibold">AI-free zone:</span> Write all answers yourself. AI-generated content (ChatGPT, Copilot, etc.) will disqualify your application.
+            </p>
+          </div>
+
           {currentStep === 1 && <Step0Social socialLinks={socialLinks} />}
-          {currentStep === 2 && <Step1Personal {...stepProps} />}
+          {currentStep === 2 && (
+            <Step1Personal
+              {...stepProps}
+              photoFiles={photoFiles}
+              onPhotoFilesChange={setPhotoFiles}
+              idDocumentFiles={idDocumentFiles}
+              onIdDocumentFilesChange={setIdDocumentFiles}
+            />
+          )}
           {currentStep === 3 && (
             <Step2Situation
               {...stepProps}
@@ -291,7 +364,14 @@ export function FormContainer({ socialLinks = [] }: { socialLinks?: SocialLink[]
             />
           )}
           {currentStep === 6 && <Step5Essays {...stepProps} />}
-          {currentStep === 7 && <Step6Commitment {...stepProps} />}
+          {currentStep === 7 && (
+            <Step7CodeOfConduct
+              data={formData}
+              errors={errors}
+              onChange={(field, value) => updateField(field, value)}
+            />
+          )}
+          {currentStep === 8 && <Step6Commitment {...stepProps} />}
 
           {submitError && (
             <div className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">

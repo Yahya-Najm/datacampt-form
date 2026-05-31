@@ -28,12 +28,15 @@ model Application {
   id String @id @default(cuid())
 
   // Personal
-  name        String
-  email       String   @unique
-  dateOfBirth DateTime
-  country     String
-  city        String
-  gender      String
+  name           String
+  email          String   @unique
+  phone          String?
+  dateOfBirth    DateTime
+  country        String
+  city           String
+  gender         String
+  photoUrl       String?
+  idDocumentUrl  String?
 
   // Current situation
   currentSituation  String[]

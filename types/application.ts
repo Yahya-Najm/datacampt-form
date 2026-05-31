@@ -2,11 +2,14 @@ export interface ApplicationFormData {
   // Step 1 — Personal
   name: string;
   email: string;
+  phone: string;
   dateOfBirth: string;
   country: string;
   city: string;
   gender: string;
   genderOther: string;
+  photoUrl: string;
+  idDocumentUrl: string;
 
   // Step 2 — Situation
   currentSituation: string[];
@@ -40,7 +43,10 @@ export interface ApplicationFormData {
   challenge: string;
   anythingElse: string;
 
-  // Step 6 — Commitment
+  // Step 7 — Code of Conduct
+  codeOfConduct: boolean;
+
+  // Step 8 — Commitment
   willingToSurvey: string;
 }
 
@@ -49,11 +55,14 @@ export type FormErrors = Partial<Record<keyof ApplicationFormData | "_form", str
 export const INITIAL_FORM_DATA: ApplicationFormData = {
   name: "",
   email: "",
+  phone: "",
   dateOfBirth: "",
   country: "",
   city: "",
   gender: "",
   genderOther: "",
+  photoUrl: "",
+  idDocumentUrl: "",
   currentSituation: [],
   situationOther: "",
   situationFileUrls: [],
@@ -78,6 +87,7 @@ export const INITIAL_FORM_DATA: ApplicationFormData = {
   whyDeserveScholarship: "",
   challenge: "",
   anythingElse: "",
+  codeOfConduct: false,
   willingToSurvey: "",
 };
 
@@ -88,5 +98,6 @@ export const STEP_TITLES = [
   "Academic & Work",
   "DataCamp",
   "Your Story",
+  "Code of Conduct",
   "Commitment",
 ];

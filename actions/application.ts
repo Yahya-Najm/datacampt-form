@@ -45,10 +45,13 @@ export async function submitApplication(
       data: {
         name: data.name.trim(),
         email: normalizedEmail,
+        phone: data.phone?.trim() || null,
         dateOfBirth: new Date(data.dateOfBirth),
         country: data.country,
         city: data.city.trim(),
         gender,
+        photoUrl: data.photoUrl || null,
+        idDocumentUrl: data.idDocumentUrl || null,
         currentSituation: data.currentSituation,
         situationOther: data.situationOther?.trim() || null,
         situationFileUrls: data.situationFileUrls,
