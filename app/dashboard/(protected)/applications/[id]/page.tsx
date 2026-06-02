@@ -103,6 +103,34 @@ export default async function ApplicationDetailPage({ params }: Props) {
           <Field label="Country" value={app.country} />
           <Field label="City" value={app.city} />
           <Field label="Gender" value={app.gender} />
+          {app.photoUrl && (
+            <div>
+              <p className="text-xs font-medium text-gray-500 mb-1.5">Photo</p>
+              <a href={app.photoUrl} target="_blank" rel="noopener noreferrer">
+                <img
+                  src={app.photoUrl}
+                  alt={`Photo of ${app.name}`}
+                  className="h-24 w-24 rounded-xl object-cover border border-gray-200 hover:opacity-80 transition-opacity"
+                />
+              </a>
+            </div>
+          )}
+          {app.idDocumentUrl && (
+            <div>
+              <p className="text-xs font-medium text-gray-500 mb-0.5">ID / Passport</p>
+              <a
+                href={app.idDocumentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm text-teal-600 hover:text-teal-700 underline underline-offset-2"
+              >
+                <svg className="h-3.5 w-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                View document ↗
+              </a>
+            </div>
+          )}
         </Section>
 
         <Section title="Current Situation">
