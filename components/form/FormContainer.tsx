@@ -226,19 +226,10 @@ export function FormContainer({ socialLinks = [] }: { socialLinks?: SocialLink[]
           <p className="hidden sm:block mt-1.5 text-sm text-gray-500 max-w-lg mx-auto">
             Apply for free access to 440+ DataCamp courses — a $399+ USD value.
           </p>
-          <div className="mt-3 flex flex-wrap justify-center gap-2">
-            <a
-              href="https://support.datacamp.com/hc/en-us"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-700 hover:bg-blue-100 hover:border-blue-300 transition-colors"
-            >
-              <svg className="h-3.5 w-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              DataCamp Support
-            </a>
-            <a
+          <div className="mt-3">
+            <p className="text-xs text-gray-400 mb-2">Technical support</p>
+            <div className="flex flex-wrap justify-center gap-2">
+            <
               href="https://wa.me/93706755741"
               target="_blank"
               rel="noopener noreferrer"
@@ -267,6 +258,7 @@ export function FormContainer({ socialLinks = [] }: { socialLinks?: SocialLink[]
               </svg>
               DM yahyasafdari0@gmail.com
             </a>
+            </div>
           </div>
         </div>
       </div>
