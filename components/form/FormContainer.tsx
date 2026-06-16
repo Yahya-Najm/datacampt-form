@@ -229,7 +229,7 @@ export function FormContainer({ socialLinks = [] }: { socialLinks?: SocialLink[]
           <div className="mt-3">
             <p className="text-xs text-gray-400 mb-2">Technical support</p>
             <div className="flex flex-wrap justify-center gap-2">
-            <
+            <a
               href="https://wa.me/93706755741"
               target="_blank"
               rel="noopener noreferrer"
